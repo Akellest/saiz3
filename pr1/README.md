@@ -34,7 +34,9 @@ Cloud 3. Закрепить практические навыки использ
 ### 1. Проверить доступность данных в Yandex Object Storage
 
 Проверяем доступность по ссылке
+
 https://storage.yandexcloud.net/arrow-datasets/yaqry_dataset.pqt
+
 Скачивается файл yaqry_dataset.pqt
 
 ### 2. Подключить бакет как источник данных для Yandex Query
@@ -75,7 +77,9 @@ SELECT COUNT(DISTINCT ip_address) AS num_hosts
             WHERE src REGEXP '(^1[2-4].)');
 ```
 
-Результат: ![](images/2.png)
+Результат:
+
+![](images/2.png)
 
 ### 2. Определите суммарный объем исходящего трафика
 
@@ -87,7 +91,9 @@ SELECT SUM(bytes) AS out_bytes
         WHERE src REGEXP '(^1[2-4].)';
 ```
 
-Результат: ![](images/3.png)
+Результат:
+
+![](images/3.png)
 
 ### 3. Определите суммарный объем входящего трафика
 
@@ -99,7 +105,9 @@ SELECT SUM(bytes) AS out_bytes
         WHERE dst REGEXP '(^1[2-4].)';
 ```
 
-Результат: ![](images/4.png)
+Результат:
+
+![](images/4.png)
 
 ## Оценка результатов
 
