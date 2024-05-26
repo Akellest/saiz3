@@ -50,6 +50,8 @@ editor_options:
 ```{R}
 library(duckdb)
 library(dplyr)
+library(lubridate)
+library(tidyverse)
 ```
 
 ```{R}
@@ -207,9 +209,14 @@ bot_hosts <- data %>%
 bot_hosts$src
 ```
 
+
+```{R}
+dbDisconnect(con, shutdown=TRUE)
+```
 ## Оценка результатов
 
 Были найдены утечки данных из сети
+
 
 ## Вывод
 
