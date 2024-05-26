@@ -146,7 +146,7 @@ result <- data %>%
   filter(!str_detect(src, "^13.37.84.125$")) %>%
   filter(!str_detect(src, "^12.55.77.96$")) %>%
   group_by(src, port) %>%
-  summarise(total_traffic = sum(bytes)) %>%
+  summarise(total_traffic = sum(bytes), .groups = 'drop') %>%
   left_join(average_traffic, by = "port") %>%
   left_join(max_traffic, by = "port") %>%
   mutate(traffic_ratio = total_traffic / avg_traffic) %>%
@@ -220,10 +220,48 @@ bot_hosts$src
 
 В нашем трафике есть еще одна бот-сеть, которая использует очень большой интервал подключения к панели управления. Хосты этой продвинутой бот-сети не входят в уже обнаруженную нами бот-сеть. Какой порт используется продвинутой бот-сетью для коммуникации?
 
+```{R}
+# Преобразование временных меток в формат POSIXct
+l_data <- data %>%
+  mutate(timestamp = as.POSIXct(timestamp, origin = "1970-01-01", tz = "UTC"))
+
+ndata <- data %>%
+  filter(grepl("^12\\.|^13\\.|^14\\.", src)) %>%
+  filter(grepl("^12\\.|^13\\.|^14\\.", dst))
+
+ndata <- ndata %>%
+  mutate(timestamp = as.POSIXct(timestamp)) %>%
+  group_by(src) %>%
+  summarise(
+    unique_dst_count = n_distinct(dst),
+    avg_timestamp = mean(timestamp)
+  ) %>%
+  arrange(unique_dst_count, avg_timestamp) %>%
+  head(1)
+
+port_ <- ndata$src
+port_
+```
+
 ### Задание 8: Внутренний сканнер
 
 Одна из наших машин сканирует внутреннюю сеть. Что это за система?
 
+```{R}
+result <- data %>%
+  filter(grepl("^12\\.|^13\\.|^14\\.", src)) %>%
+  filter(grepl("^12\\.|^13\\.|^14\\.", dst)) %>%
+  group_by(src) %>%
+  summarize(
+    unique_dst_count = n_distinct(dst),
+    avg_timestamp = mean(timestamp)
+  ) %>%
+  arrange(desc(unique_dst_count), avg_timestamp) %>%
+  head(1)
+
+src <- result$src
+src
+```
 
 ## Оценка результатов
 
