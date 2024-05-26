@@ -3,8 +3,7 @@ title: "Использование технологии Yandex Query для ан
 format:   
   md:
     output-file: README.md
-editor_options: 
-  chunk_output_type: inline
+engine: knitr
 ---
 
 ## Цель работы
@@ -58,11 +57,17 @@ https://storage.yandexcloud.net/arrow-datasets/yaqry_dataset.pqt
 Используем данные, представленные в задании для заполнения колонок
 
 SCHEMA=(
+
 timestamp TIMESTAMP NOT NULL,
+
 src STRING,
+
 dst STRING,
+
 port INT32,
+
 bytes INT32
+
 )
 
 Проверяем, что все создано верно, выполняя запрос
