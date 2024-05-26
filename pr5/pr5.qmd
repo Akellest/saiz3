@@ -1,10 +1,9 @@
 ---
 title: "Использование технологии Yandex Query для анализа данных сетевой активности №5"
-format:   
-  md:
-    output-file: README.md
-editor_options: 
-  chunk_output_type: inline
+format: 
+    md:
+        output-file: README.md
+engine: knitr
 ---
 
 ## Цель работы
