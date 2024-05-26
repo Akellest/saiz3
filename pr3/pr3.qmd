@@ -3,8 +3,7 @@ title: "Использование технологии Yandex Query для ан
 format:   
   md:
     output-file: README.md
-editor_options: 
-  chunk_output_type: inline
+engine: knitr
 ---
 
 ## Цель работы
