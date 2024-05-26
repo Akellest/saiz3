@@ -292,14 +292,14 @@ result %>%
     # Groups:   src [1]
       src          port total_traffic avg_traffic max_traffic traffic_ratio
       <chr>       <int>         <int>       <dbl>       <int>         <dbl>
-    1 14.42.45.48   115      66936506      33341.      202787         2008.
+    1 12.53.121.87   50      66936506      33341.      202787         2008.
 
 ``` r
 src3 <- result$src[1]
 src3
 ```
 
-    [1] "14.42.45.48"
+    [1] "12.53.121.87"
 
 ## Оценка результатов
 
