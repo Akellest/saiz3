@@ -58,30 +58,163 @@ library(lubridate)
 library(tidyverse)
 ```
 
+```{R}
+library(ClickHouseHTTP)
+library(DBI)
+connection <- dbConnect(
+  ClickHouseHTTP::ClickHouseHTTP(),
+  host="rc1d-sbdcf9jd6eaonra9.mdb.yandexcloud.net",
+  port=8443,
+  user="student24dwh",
+  password="DiKhuiRIVVKdRt9XON",
+  db="TMdata",
+  https=TRUE,
+  ssl_verifypeer=FALSE)
+database<-dbReadTable(connection, "data")
+data <- dbGetQuery(connection, "SELECT * FROM data")
+```
+
+```{R}
+data <- data %>%
+  mutate(timestamp = as_datetime(timestamp/1000, origin = "1970-01-01", tz = "UTC"))
+data %>% glimpse()
+```
+
 ### Задание 1: Надите утечку данных из Вашей сети
 
 Важнейшие документы с результатами нашей исследовательской деятельности в области создания вакцин скачиваются в виде больших заархивированных дампов. Один из хостов в нашей сети используется для пересылки этой информации – он пересылает гораздо больше информации на внешние ресурсы в Интернете, чем остальные компьютеры нашей сети. Определите его IP-адрес.
+
+```{R}
+result <- data %>%
+  filter(grepl("^12\\.|^13\\.|^14\\.", src)) %>%
+  group_by(src) %>%
+  summarise(total_bytes = sum(bytes)) %>%
+  arrange(desc(total_bytes)) %>%
+  head(1)
+src1 <- result %>% collect()
+
+src1$src
+```
 
 ### Задание 2: Надите утечку данных 2
 
 Другой атакующий установил автоматическую задачу в системном планировщике cron для экспорта содержимого внутренней wiki системы. Эта система генерирует большое количество трафика в нерабочие часы, больше чем остальные хосты. Определите IP этой системы. Известно, что ее IP адрес отличается от нарушителя из предыдущей задачи.
 
+```{R}
+data_local <- collect(data)
+data_local <- data_local %>%
+  mutate(hour = hour(as.POSIXlt(timestamp, origin = "1970-01-01", tz = "UTC")))
+
+work_time <- data_local %>%
+  group_by(hour) %>%
+  summarise(traffic = sum(bytes)) %>%
+  arrange(traffic)
+work_time
+
+data2 <- collect(data)
+result <- data2 %>%
+  filter(grepl("^12\\.|^13\\.|^14\\.", src)) %>%
+  filter(between(hour(timestamp), 0, 16)) %>%
+  filter(!str_detect(src, "^13.37.84.125$")) %>%
+  group_by(src) %>%
+  summarise(sum_traffic = sum(bytes)) %>%
+  arrange(desc(sum_traffic)) %>%
+  head(1)
+src2 <- result %>% collect()
+src2$src
+```
+
 ### Задание 3: Надите утечку данных 3
 
 Еще один нарушитель собирает содержимое электронной почты и отправляет в Интернет используя порт, который обычно используется для другого типа трафика. Атакующий пересылает большое количество информации используя этот порт, которое нехарактерно для других хостов, использующих этот номер порта. Определите IP этой системы. Известно, что ее IP адрес отличается от нарушителей из предыдущих задач.
+
+```{R}
+average_traffic <- data %>%
+  filter(grepl("^12\\.|^13\\.|^14\\.", src)) %>%
+  group_by(port) %>%
+  summarise(avg_traffic = mean(bytes)) %>%
+  collect()
+
+max_traffic <- data %>%
+  filter(grepl("^12\\.|^13\\.|^14\\.", src)) %>%
+  group_by(port) %>%
+  summarise(max_traffic = max(bytes)) %>%
+  collect()
+
+result <- data %>%
+  filter(grepl("^12\\.|^13\\.|^14\\.", src)) %>%
+  filter(!str_detect(src, "^13.37.84.125$")) %>%
+  filter(!str_detect(src, "^12.55.77.96$")) %>%
+  group_by(src, port) %>%
+  summarise(total_traffic = sum(bytes)) %>%
+  left_join(average_traffic, by = "port") %>%
+  left_join(max_traffic, by = "port") %>%
+  mutate(traffic_ratio = total_traffic / avg_traffic) %>%
+  head(1) %>%
+  collect()
+
+s <- result$src
+s
+```
 
 ### Задание 4: Обнаружение канала управления
 
 Зачастую в корпоротивных сетях находятся ранее зараженные системы, компрометация которых осталась незамеченной. Такие системы генерируют небольшое количество трафика для связи с панелью управления бот-сети, но с одинаковыми параметрами – в данном случае с одинаковым номером порта. Какой номер порта используется бот-панелью для управления ботами?
 
+```{R}
+average_bytes <- mean(data$bytes)
+
+port_counts <- data %>%
+  group_by(port) %>%
+  summarise(unique_combinations = n_distinct(paste(src, dst))) %>%
+  ungroup()
+
+f_port <- port_counts %>%
+  left_join(data, by = "port") %>%
+  filter(bytes < average_bytes) %>%
+  arrange(desc(unique_combinations)) %>%
+  slice(1)
+
+f_port$port
+```
+
 ### Задание 5: Обнаружение P2P трафика
 
 Иногда компрометация сети проявляется в нехарактерном трафике между хостами в локальной сети, который свидетельствует о горизонтальном перемещении (lateral movement). В нашей сети замечена система, которая ретранслирует по локальной сети полученные от панели управления бот-сети команды, создав таким образом внутреннюю пиринговую сеть. Какой уникальный порт используется этой бот сетью для внутреннего общения между собой?
+
+```{R}
+average_bytes <- mean(data$bytes)
+
+port_counts <- data %>%
+  filter(grepl("^12\\.|^13\\.|^14\\.", src)) %>%
+  filter(grepl("^12\\.|^13\\.|^14\\.", dst)) %>%
+  group_by(port) %>%
+  summarise(unique_combinations = n_distinct(paste(src, dst))) %>%
+  ungroup()
+
+f_port <- port_counts %>%
+  left_join(data, by = "port") %>%
+  filter(bytes < average_bytes) %>%
+  arrange(desc(unique_combinations)) %>%
+  slice(1)
+
+f_port$port
+```
 
 ### Задание 6: Чемпион малвари
 
 Нашу сеть только что внесли в списки спам-ферм. Один из хостов сети получает множество команд от панели C&C, ретранслируя их внутри сети. В обычных условиях причин для такого активного взаимодействия внутри сети у данного хоста нет. Определите IP такого хоста.
 
+```{R}
+bot_hosts <- data %>%
+  filter(grepl("^12\\.|^13\\.|^14\\.", src)) %>%
+  filter(grepl("^12\\.|^13\\.|^14\\.", dst)) %>%
+  group_by(src) %>%
+  summarise(total_commands = n()) %>%
+  arrange(desc(total_commands)) %>%
+  head(1)
+bot_hosts$src
+```
 
 ### Задание 7: Скрытая бот-сеть
 
