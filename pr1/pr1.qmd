@@ -79,12 +79,8 @@ bytes INT32
 ### 1. Известно, что IP адреса внутренней сети начинаются с октетов, принадлежащих интервалу [12-14]. Определите количество хостов внутренней сети, представленных в датасете.
 
 Запрос:
-```{SQL}
-SELECT COUNT(DISTINCT ip_address) AS num_hosts
-    FROM (SELECT src AS ip_address
-        FROM `lamzin1`
-            WHERE src REGEXP '(^1[2-4].)');
-```
+
+![](images/sql1.png)
 
 Результат:
 
@@ -93,11 +89,8 @@ SELECT COUNT(DISTINCT ip_address) AS num_hosts
 ### 2. Определите суммарный объем исходящего трафика
 
 Запрос:
-```{SQL}
-SELECT SUM(bytes) AS out_bytes
-    FROM `lamzin1`
-        WHERE src REGEXP '(^1[2-4].)';
-```
+
+![](images/sql2.png)
 
 Результат:
 
@@ -106,11 +99,8 @@ SELECT SUM(bytes) AS out_bytes
 ### 3. Определите суммарный объем входящего трафика
 
 Запрос:
-```{SQL}
-SELECT SUM(bytes) AS out_bytes
-    FROM `lamzin1`
-        WHERE dst REGEXP '(^1[2-4].)';
-```
+
+![](images/sql3.png)
 
 Результат:
 
