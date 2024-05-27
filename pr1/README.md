@@ -4,9 +4,11 @@
 
 ## Цель работы
 
-1. Изучить возможности технологии Yandex Query для анализа структурированных наборов данных
-2. Получить навыки построения аналитического пайплайна для анализа данных с помощью сервисов Yandex Cloud
-3. Закрепить практические навыки использования SQL для анализа данных сетевой активности в сегментированной корпоративной сети
+1.Изучить возможности технологии Yandex Query для анализа
+структурированных наборов данных 2. Получить навыки построения
+аналитического пайплайна для анализа данных с помощью сервисов Yandex
+Cloud 3. Закрепить практические навыки использования SQL для анализа
+данных сетевой активности в сегментированной корпоративной сети
 
 ## Исходные данные
 
@@ -55,8 +57,19 @@ https://storage.yandexcloud.net/arrow-datasets/yaqry_dataset.pqt
 
 Используем данные, представленные в задании для заполнения колонок
 
-SCHEMA=( timestamp TIMESTAMP NOT NULL, src STRING, dst STRING, port
-INT32, bytes INT32 )
+SCHEMA=(
+
+timestamp TIMESTAMP NOT NULL,
+
+src STRING,
+
+dst STRING,
+
+port INT32,
+
+bytes INT32
+
+)
 
 Проверяем, что все создано верно, выполняя запрос
 
@@ -68,12 +81,7 @@ INT32, bytes INT32 )
 
 Запрос:
 
-``` {sql}
-SELECT COUNT(DISTINCT ip_address) AS num_hosts
-    FROM (SELECT src AS ip_address
-        FROM `lamzin1`
-            WHERE src REGEXP '(^1[2-4].)');
-```
+![](images/sql1.png)
 
 Результат:
 
@@ -83,11 +91,7 @@ SELECT COUNT(DISTINCT ip_address) AS num_hosts
 
 Запрос:
 
-``` {sql}
-SELECT SUM(bytes) AS out_bytes
-    FROM `lamzin1`
-        WHERE src REGEXP '(^1[2-4].)';
-```
+![](images/sql2.png)
 
 Результат:
 
@@ -97,11 +101,7 @@ SELECT SUM(bytes) AS out_bytes
 
 Запрос:
 
-``` {sql}
-SELECT SUM(bytes) AS out_bytes
-    FROM `lamzin1`
-        WHERE dst REGEXP '(^1[2-4].)';
-```
+![](images/sql3.png)
 
 Результат:
 
