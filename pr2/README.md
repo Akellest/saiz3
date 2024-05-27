@@ -1,4 +1,5 @@
-Использование технологии Yandex Query для анализа данных сетевой активности №2
+Использование технологии Yandex Query для анализа данных сетевой
+активности №2
 ================
 
 ## Цель работы
@@ -77,19 +78,17 @@ https://datalens.yandex.ru/
 
 Запрос:
 
-``` {sql}
-IF (([src] LIKE '12.%' OR
-    [src] LIKE '13.%' OR
-    [src] LIKE '14.%')
-    AND
-    ([dst] LIKE '12.%' OR
-    [dst] LIKE '13.%' OR
-    [dst] LIKE '14.%'))
-  THEN "Внутренний трафик"
-ELSE
-  "Внешний трафик"
-END
-```
+    IF (([src] LIKE '12.%' OR
+        [src] LIKE '13.%' OR
+        [src] LIKE '14.%')
+        AND
+        ([dst] LIKE '12.%' OR
+        [dst] LIKE '13.%' OR
+        [dst] LIKE '14.%'))
+      THEN "Внутренний трафик"
+    ELSE
+      "Внешний трафик"
+    END
 
 Результат:
 
@@ -100,13 +99,11 @@ END
 
 Запрос:
 
-``` {sql}
-IF (LEFT([src], 3) IN ('12.', '13.', '14.') AND LEFT([dst], 3) NOT IN ('12.', '13.', '14.'))
-    THEN 'Исходящий трафик'
-ELSEIF (LEFT([dst], 3) IN ('12.', '13.', '14.') AND LEFT([src], 3) NOT IN ('12.', '13.', '14.'))
-    THEN 'Входящий трафик'
-END
-```
+    IF (LEFT([src], 3) IN ('12.', '13.', '14.') AND LEFT([dst], 3) NOT IN ('12.', '13.', '14.'))
+        THEN 'Исходящий трафик'
+    ELSEIF (LEFT([dst], 3) IN ('12.', '13.', '14.') AND LEFT([src], 3) NOT IN ('12.', '13.', '14.'))
+        THEN 'Входящий трафик'
+    END
 
 Результат:
 
@@ -117,13 +114,11 @@ END
 
 Запрос:
 
-``` {sql}
-IF (LEFT([src], 3) IN ('12.', '13.', '14.') AND LEFT([dst], 3) NOT IN ('12.', '13.', '14.'))
-    THEN 'Исходящий трафик'
-ELSEIF (LEFT([dst], 3) IN ('12.', '13.', '14.') AND LEFT([src], 3) NOT IN ('12.', '13.', '14.'))
-    THEN 'Входящий трафик'
-END
-```
+    IF (LEFT([src], 3) IN ('12.', '13.', '14.') AND LEFT([dst], 3) NOT IN ('12.', '13.', '14.'))
+        THEN 'Исходящий трафик'
+    ELSEIF (LEFT([dst], 3) IN ('12.', '13.', '14.') AND LEFT([src], 3) NOT IN ('12.', '13.', '14.'))
+        THEN 'Входящий трафик'
+    END
 
 Результат:
 
