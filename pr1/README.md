@@ -81,7 +81,12 @@ bytes INT32
 
 Запрос:
 
-![](images/sql1.png)
+``` sql
+SELECT COUNT(DISTINCT ip_address) AS num_hosts
+    FROM (SELECT src AS ip_address
+        FROM `lamzin1`
+            WHERE src REGEXP '(^1[2-4].)');
+```
 
 Результат:
 
@@ -91,7 +96,11 @@ bytes INT32
 
 Запрос:
 
-![](images/sql2.png)
+``` sql
+SELECT SUM(bytes) AS out_bytes
+    FROM `lamzin1`
+        WHERE src REGEXP '(^1[2-4].)';
+```
 
 Результат:
 
@@ -101,11 +110,21 @@ bytes INT32
 
 Запрос:
 
-![](images/sql3.png)
+``` sql
+SELECT SUM(bytes) AS out_bytes
+    FROM `lamzin1`
+        WHERE dst REGEXP '(^1[2-4].)';
+```
 
 Результат:
 
 ![](images/4.png)
+
+``` r
+print("done")
+```
+
+    [1] "done"
 
 ## Оценка результатов
 
