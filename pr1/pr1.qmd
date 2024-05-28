@@ -80,7 +80,12 @@ bytes INT32
 
 Запрос:
 
-![](images/sql1.png)
+```{SQL}
+SELECT COUNT(DISTINCT ip_address) AS num_hosts
+    FROM (SELECT src AS ip_address
+        FROM `lamzin1`
+            WHERE src REGEXP '(^1[2-4].)');
+```
 
 Результат:
 
@@ -90,7 +95,11 @@ bytes INT32
 
 Запрос:
 
-![](images/sql2.png)
+```{SQL}
+SELECT SUM(bytes) AS out_bytes
+    FROM `lamzin1`
+        WHERE src REGEXP '(^1[2-4].)';
+```
 
 Результат:
 
@@ -100,12 +109,19 @@ bytes INT32
 
 Запрос:
 
-![](images/sql3.png)
+```{SQL}
+SELECT SUM(bytes) AS out_bytes
+    FROM `lamzin1`
+        WHERE dst REGEXP '(^1[2-4].)';
+```
 
 Результат:
 
 ![](images/4.png)
 
+```{R}
+print("done")
+```
 ## Оценка результатов
 
 Был подлючен и настроен бакет для запросов Yandex Query, было определено количетсво хостов во внутренней сети, их суммарный исходящий и входящий трафик
