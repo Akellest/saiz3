@@ -128,6 +128,12 @@ https://datalens.yandex.ru/
 
 ![](images/6.png)
 
+``` r
+print("done")
+```
+
+    [1] "done"
+
 ## Оценка результатов
 
 Было настроено подлючение к Yandex Query из DataLens, созданы графики и
